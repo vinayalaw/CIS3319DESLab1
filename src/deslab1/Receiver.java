@@ -1,21 +1,62 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package deslab1;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
 
 /**
  *
- * @author vinay
+ * 
  */
 public class Receiver {
-
-    /**
-     * @param args the command line arguments
-     */
+    private Socket socket = null;
+    
     public static void main(String[] args) {
-        // TODO code application logic here
+        InetAddress addr = null;
+        int port = 0, key;
+        String plain="", cipher= "", addrStr;
+        Scanner in = new Scanner(System.in);
+        
+        //generate key
+        
+        //display the key
+        
+        //get address and port
+        System.out.println("Enter Connection Address: ");
+        addrStr = in.nextLine();
+        System.out.println("Enter Connection Port: ");
+        port = in.nextInt();
+        
+        try{
+            addr = InetAddress.getByName(addrStr);
+        }
+        catch(UnknownHostException e){
+            System.out.println("Invalid address!");
+        }
+        
+        //try the connection
+        try{
+            socket = new Socket(addr, port);
+        }
+        catch(IOException e){
+            System.out.println(e);
+        }
+        System.out.println("Connected!");
+        
+        
+        //receive message
+        
+        //decrypt message
+        
+        //display plaintext and ciphertext
+        System.out.println("Plain: " + plain);
+        System.out.println("Cipher: " + cipher);
+    }
+    
+    public static void decrypt(String message){
+        
     }
     
 }
