@@ -1,7 +1,7 @@
 package deslab1;
+
 import java.net.*;
 import java.io.*;
-import java.util.Random;
 import java.util.Scanner;
 /**
  *
@@ -15,11 +15,10 @@ public class Sender {
         InetAddress addr = null;
         int port = 0, key;
         String plain="", cipher= "", addrStr;
-        Scanner in = new Scanner(System.in);
-        
+        Scanner in = new Scanner(System.in);      
         
         //generate key
-        key = (int) (Math.random() * 1024);
+        key = DESUtil.genKey();
         //display the key
         System.out.println("Here is the Key: "+key);
         System.out.println("Send it to the receiver");
@@ -28,23 +27,16 @@ public class Sender {
         System.out.println("Enter Connection Address: ");
         addrStr = in.nextLine();
         System.out.println("Enter Connection Port: ");
-        port = in.nextInt();
-        
-        try{
-            addr = InetAddress.getByName(addrStr);
-        }
-        catch(UnknownHostException e){
-            System.out.println("Invalid address!");
-        }
+        port = in.nextInt();       
+        try{addr = InetAddress.getByName(addrStr);}
+        catch(UnknownHostException e){System.out.println("Invalid address!");}
         
         //try the connection
         try{
             socket = new Socket(addr, port);
             dOut = new DataOutputStream(socket.getOutputStream());
         }
-        catch(IOException e){
-            System.out.println(e);
-        }
+        catch(IOException e){System.out.println(e);}
         System.out.println("Connected!");       
         
         //get message
@@ -52,7 +44,7 @@ public class Sender {
         plain = in.next();
         
         //encrypt message
-        cipher = encrypt(plain, key);
+        cipher = DESUtil.encrypt(plain, key);
         
         //send message
         try{
@@ -60,21 +52,10 @@ public class Sender {
             dOut.writeUTF(cipher);
             dOut.flush();
         }
-        catch(IOException e){
-            System.out.println("error sending message!");
-        }
+        catch(IOException e){System.out.println("error sending message!");}
         
         //display plaintext and ciphertext
         System.out.println("Plain: " + plain);
         System.out.println("Cipher: " + cipher);
     }
-    
-    public static String encrypt(String message, int key){
-        String result = "";
-        byte[] bin = message.getBytes();
-        
-        
-        return result;
-    }
-    
 }
