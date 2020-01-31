@@ -9,6 +9,7 @@ class DESUtil {
     //Global Vars
     
     private static final int KEY_LENGTH = 64, BLOCK_LENGTH = 64;
+    pr
     private static int[] KEY_SHIFTS =
     {1,  1,  2,  2,  2,  2,  2,  2,  1,  2,  2,  2,  2,  2,  2,  1};
     private static final int[] INIT_PERM = {
@@ -133,19 +134,51 @@ class DESUtil {
     }
     
     public static String encryptBlock(String binPTBlock){
-        String ctBlock = "";
-        return ctBlock;
+        String binCTBlock = "";
+        //encrypt the block here
+        return binCTBlock;
     }
     
     /**************************************************************************/
     //Decryption
     
     //decrypt - decrypt the message with the given key
-    public static String decrypt(String message, int key){
-        String result = "";
-        byte[] bin = message.getBytes();
-        //DES decryption here
-        return result;
+    public static String decrypt(String binSeq, int key){
+        //declare variables
+        String message = "";
+        String [] binPTBlocks;
+        String [] binCTBlocks;
+        
+        //break binSeq into blocks
+        binCTBlocks = new String[binSeq.length()/BLOCK_LENGTH];
+        int seqIndex = 0;
+        for(int i = 0; i < binCTBlocks.length; i++){
+            binCTBlocks[i] = binSeq.substring(seqIndex, seqIndex+64);
+            seqIndex += BLOCK_LENGTH;
+        }
+        
+        //decrypt each ciphertext block
+        binPTBlocks = new String[binSeq.length()/BLOCK_LENGTH];
+        for (int i = 0; i < binCTBlocks.length; i++){
+            binPTBlocks[i] = decryptBlock(binCTBlocks[i]);
+        }
+        
+        //construct the plaintext binary
+        binSeq  = "";
+        for(String s: binPTBlocks){
+            binSeq += s;
+        }
+        
+        //TODO convert plaintext binary to message
+        
+        
+        return message;
+    }
+    
+    private static String decryptBlock(String binCTBlock){
+        String binPTBlock = "";
+        //decrypt the block here
+        return binPTBlock;
     }
     
     /**************************************************************************/
