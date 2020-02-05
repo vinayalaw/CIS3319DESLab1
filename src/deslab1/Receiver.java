@@ -2,7 +2,11 @@ package deslab1;
 
 import java.net.*;
 import java.io.*;
+import java.util.Base64;
 import java.util.Scanner;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  *
@@ -13,8 +17,8 @@ public class Receiver {
     private static DataInputStream dIn = null;
     public static void main(String[] args) {
         InetAddress addr = null;
-        int port = 0, key = 0;
-        String plain="", cipher= "", addrStr;
+        int port = 0;
+        String plain="", addrStr, keyStr;
         Scanner in = new Scanner(System.in);
         
         //get address and port
@@ -35,23 +39,32 @@ public class Receiver {
         
         //get the key from user
         System.out.println("Enter Key: ");
-        key = in.nextInt();      
+        keyStr = in.nextLine();
         
         //receive message
+        String ciphertext="";
         try{
             BufferedReader br = new BufferedReader(new InputStreamReader(dIn));
             String bufferStr = "";
             while((bufferStr = br.readLine()) != null){
-                cipher = bufferStr;
+                ciphertext = bufferStr;
             }
         }
         catch(IOException e){System.out.println("error receiving message!");}
         
-        //decrypt message
-        plain = DESUtil.decrypt(cipher, key);
+        //decrypt the message
+        SecretKey key = null;
+        try {
+            byte[] decodedKey = Base64.getDecoder().decode(keyStr);
+            key = new SecretKeySpec(decodedKey, 0, decodedKey.length, "DES");
+            DesEncrypter encrypter = new DesEncrypter(key);
+            ciphertext = encrypter.decrypt(ciphertext);
+        } catch (Exception ex) {
+            System.out.println("Encryption error!");
+        }
         
         //display plaintext and ciphertext
         System.out.println("Plain: " + plain);
-        System.out.println("Cipher: " + cipher);
+        System.out.println("Cipher: " + ciphertext);
     }  
 }
