@@ -2,10 +2,16 @@ package deslab1;
 
 import java.net.*;
 import java.io.*;
+import java.util.Base64;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+
 /**
+ *Sender: establishes connection for sender, sends message, and returns a key
  *
- * 
  */
 public class Sender {
     private static Socket socket = null;
@@ -13,21 +19,15 @@ public class Sender {
     
     public static void main(String[] args) {
         InetAddress addr = null;
-        int port = 0, key;
-        String plain="", cipher= "", addrStr;
-        Scanner in = new Scanner(System.in);      
-        
-        //generate key
-        key = DESUtil.genKey();
-        //display the key
-        System.out.println("Here is the Key: "+key);
-        System.out.println("Send it to the receiver");
+        int port = 0;
+        String plain="", addrStr, ciphertext="";
+        Scanner in = new Scanner(System.in);
         
         //get address and port
         System.out.println("Enter Connection Address: ");
         addrStr = in.nextLine();
         System.out.println("Enter Connection Port: ");
-        port = in.nextInt();       
+        port = in.nextInt();
         try{addr = InetAddress.getByName(addrStr);}
         catch(UnknownHostException e){System.out.println("Invalid address!");}
         
@@ -37,25 +37,34 @@ public class Sender {
             dOut = new DataOutputStream(socket.getOutputStream());
         }
         catch(IOException e){System.out.println(e);}
-        System.out.println("Connected!");       
+        System.out.println("Connected!");
         
         //get message
         System.out.println("Please write your message then type enter: ");
         plain = in.next();
         
-        //encrypt message
-        cipher = DESUtil.encrypt(plain, key);
-        
+        //encrypt
+        SecretKey key = null;
+        try {
+            key = KeyGenerator.getInstance("DES").generateKey();
+            DesEncrypter encrypter = new DesEncrypter(key);
+            ciphertext = encrypter.encrypt(plain);
+        } catch (Exception ex) {
+            System.out.println("Encryption error!");
+        }
         //send message
         try{
-            dOut.writeByte(cipher.getBytes().length);
-            dOut.writeUTF(cipher);
+            dOut.writeByte(ciphertext.getBytes().length);
+            dOut.writeUTF(ciphertext);
             dOut.flush();
         }
         catch(IOException e){System.out.println("error sending message!");}
         
+        //give the key        
+        System.out.println(Base64.getEncoder().encodeToString(key.getEncoded())+"\n\n");
+        
         //display plaintext and ciphertext
         System.out.println("Plain: " + plain);
-        System.out.println("Cipher: " + cipher);
+        System.out.println("Cipher: " + ciphertext);
     }
 }
