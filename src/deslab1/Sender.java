@@ -39,7 +39,9 @@ public class Sender {
         
         //get message
         System.out.println("Please write your message then type enter: ");
-        plain = in.next();
+        while(plain.equals("")){
+            plain = in.nextLine();
+        }       
 
         //encrypt
         SecretKey key = null;
@@ -53,7 +55,6 @@ public class Sender {
 
         try{
             //send the message
-            dOut.writeByte(ciphertext.getBytes().length);
             dOut.writeUTF(ciphertext);
             dOut.flush();
             //close open vars
@@ -63,7 +64,8 @@ public class Sender {
         }
         catch(IOException e){System.out.println("error sending message!");}
                
-        //give the key        
+        //give the key
+        System.out.println("Here is the key: ");        
         System.out.println(Base64.getEncoder().encodeToString(key.getEncoded())+"\n\n");
         
         //display plaintext and ciphertext

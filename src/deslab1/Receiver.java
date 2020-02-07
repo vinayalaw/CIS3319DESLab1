@@ -26,15 +26,13 @@ public class Receiver {
             server = new ServerSocket(port);
             socket = server.accept();
             System.out.println("Connected!");
+            //receive a message
+            dIn = new DataInputStream(socket.getInputStream());
+            ciphertext = dIn.readUTF();
+            System.out.println("We got the message!");
             //get the key
             System.out.println("Enter Key: ");
             keyStr = in.nextLine();
-            //receive a message
-            BufferedReader br = new BufferedReader(new InputStreamReader(dIn));
-            String bufferStr = "";
-            while((bufferStr = br.readLine()) != null){
-                ciphertext = bufferStr;
-            }
             //close open vars
             socket.close();
             in.close();
@@ -42,6 +40,7 @@ public class Receiver {
         }
         catch(IOException e){
             System.out.println(e);
+            System.exit(1);
         }      
         
         //decrypt the message
@@ -50,7 +49,7 @@ public class Receiver {
             byte[] decodedKey = Base64.getDecoder().decode(keyStr);
             key = new SecretKeySpec(decodedKey, 0, decodedKey.length, "DES");
             DesEncrypter encrypter = new DesEncrypter(key);
-            ciphertext = encrypter.decrypt(ciphertext);
+            plain = encrypter.decrypt(ciphertext);
         } catch (Exception ex) {
             System.out.println("Encryption error!");
         }
