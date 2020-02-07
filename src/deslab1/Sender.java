@@ -4,8 +4,6 @@ import java.net.*;
 import java.io.*;
 import java.util.Base64;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
@@ -42,7 +40,7 @@ public class Sender {
         //get message
         System.out.println("Please write your message then type enter: ");
         plain = in.next();
-        
+
         //encrypt
         SecretKey key = null;
         try {
@@ -52,14 +50,19 @@ public class Sender {
         } catch (Exception ex) {
             System.out.println("Encryption error!");
         }
-        //send message
+
         try{
+            //send the message
             dOut.writeByte(ciphertext.getBytes().length);
             dOut.writeUTF(ciphertext);
             dOut.flush();
+            //close open vars
+            socket.close();
+            dOut.close();
+            in.close();
         }
         catch(IOException e){System.out.println("error sending message!");}
-        
+               
         //give the key        
         System.out.println(Base64.getEncoder().encodeToString(key.getEncoded())+"\n\n");
         

@@ -4,7 +4,6 @@ import java.net.*;
 import java.io.*;
 import java.util.Base64;
 import java.util.Scanner;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -14,43 +13,35 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Receiver {
     private static Socket socket = null;
+    private static ServerSocket server = null;
     private static DataInputStream dIn = null;
     public static void main(String[] args) {
-        InetAddress addr = null;
-        int port = 0;
-        String plain="", addrStr, keyStr;
+        int port = 8888;
+        String plain="", keyStr="", ciphertext="";
         Scanner in = new Scanner(System.in);
-        
-        //get address and port
-        System.out.println("Enter Connection Address: ");
-        addrStr = in.nextLine();
-        System.out.println("Enter Connection Port: ");
-        port = in.nextInt();        
-        try{addr = InetAddress.getByName(addrStr);}
-        catch(UnknownHostException e){System.out.println("Invalid address!");}
-        
-        //try the connection
+
         try{
-            socket = new Socket(addr, port);
-            dIn = new DataInputStream(socket.getInputStream());
-        }
-        catch(IOException e){System.out.println(e);}
-        System.out.println("Connected!");
-        
-        //get the key from user
-        System.out.println("Enter Key: ");
-        keyStr = in.nextLine();
-        
-        //receive message
-        String ciphertext="";
-        try{
+            //connect
+            server = new ServerSocket(port);
+            socket = server.accept();
+            System.out.println("Connected!");
+            //get the key
+            System.out.println("Enter Key: ");
+            keyStr = in.nextLine();
+            //receive a message
             BufferedReader br = new BufferedReader(new InputStreamReader(dIn));
             String bufferStr = "";
             while((bufferStr = br.readLine()) != null){
                 ciphertext = bufferStr;
             }
+            //close open vars
+            socket.close();
+            in.close();
+            dIn.close();
         }
-        catch(IOException e){System.out.println("error receiving message!");}
+        catch(IOException e){
+            System.out.println(e);
+        }      
         
         //decrypt the message
         SecretKey key = null;
