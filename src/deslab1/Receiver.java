@@ -10,6 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  *
  * 
+ * @author vinay
  */
 public class Receiver {
     private static Socket socket = null;
